@@ -1,17 +1,17 @@
-# Prettier formatter for Visual Studio Code
+# Prettier+
 
-VS Code package to format your JavaScript / TypeScript / CSS using [Prettier](https://github.com/prettier/prettier).
+Give Prettier the ability to read the user settings of Visual Studio Code to format style files. More information please refer to [Prettier](https://github.com/prettier/prettier).
 
 ## Installation
 
-Install through VS Code extensions. Search for `Prettier - Code formatter`
+Install through VS Code extensions. Search for `Prettier+`
 
-[Visual Studio Code Market Place: Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+[Visual Studio Code Market Place: Prettier+](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier+)
 
 Can also be installed in VS Code: Launch VS Code Quick Open (Ctrl+P), paste the following command, and press enter.
 
 ```
-ext install esbenp.prettier-vscode
+ext install esbenp.prettier+
 ```
 
 &#x26a0; A word of warning-if you have any other code formatting extensions installed such as for example hugely popular `HookyQR.beautify` or `taichi.react-beautify` they might take precedence and format your code instead of Prettier leading to unexpected results.

@@ -1,9 +1,9 @@
 {
-  "name": "prettier-vscode",
-  "displayName": "Prettier - Code formatter",
-  "description": "VS Code plugin for prettier/prettier",
-  "version": "1.8.0",
-  "publisher": "esbenp",
+  "name": "prettier-plus",
+  "displayName": "Prettier+",
+  "description": "Give Prettier the ability to read the user settings of Visual Studio Code to format style files.",
+  "version": "1.8.1",
+  "publisher": "Shunqian",
   "author": "Esben Petersen <@esbenp>",
   "galleryBanner": {
     "color": "#ffe04b",

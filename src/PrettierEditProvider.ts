@@ -6,6 +6,7 @@ import {
     FormattingOptions,
     CancellationToken,
     TextEdit,
+    workspace,
 } from 'vscode';
 
 import { safeExecution, addToOutput, setUsedModule } from './errorHandler';
@@ -23,6 +24,8 @@ import {
 } from './types.d';
 
 const bundledPrettier = require('prettier') as Prettier;
+const fs = require("fs");
+const path = require("path");
 /**
  * HOLD style parsers (for stylelint integration)
  */
@@ -170,6 +173,46 @@ async function format(
             endOfLine: vscodeConfig.endOfLine,
         }
     );
+    /**
+     * Give Prettier the ability to read the user settings of Visual Studio Code to format style files.
+     */
+    const formatStyle = () => {
+        const prettierStylelint = require('prettier-stylelint') as PrettierStylelint;
+        const workspacePath = workspace.rootPath;
+        const settingPath = "/.vscode/settings.json";
+
+        return new Promise(resolve => {
+            fs.readFile(workspacePath + settingPath, "utf8", function (err:string , data:string) {
+                if (err) {
+                    addToOutput(
+                        `Failed to read user config for ${workspacePath +
+                        settingPath}. Falling back to the default stylelintrc config.`
+                    );
+                    resolve(fileName);
+                } else {
+                    const settings = JSON.parse(data);
+                    const stylelintConfig =
+                        settings["stylelint.config"] &&
+                        settings["stylelint.config"].extends;
+                    if (!stylelintConfig) {
+                        addToOutput(
+                            `Failed to find "stylelint.config" in ${workspacePath +
+                            settingPath}. Falling back to the default stylelintrc config.`
+                        );
+                        resolve(fileName);
+                    } else {
+                        resolve(path.resolve(workspacePath, stylelintConfig));
+                    }
+                }
+            });
+        }).then((rulePath: any) => {
+            return prettierStylelint.format({
+                text,
+                filePath: rulePath,
+                prettierOptions
+            });
+        });
+    };
 
     if (vscodeConfig.tslintIntegration && parser === 'typescript') {
         return safeExecution(
@@ -207,16 +250,7 @@ async function format(
     }
 
     if (vscodeConfig.stylelintIntegration && STYLE_PARSERS.includes(parser)) {
-        const prettierStylelint = require('prettier-stylelint') as PrettierStylelint;
-        return safeExecution(
-            prettierStylelint.format({
-                text,
-                filePath: fileName,
-                prettierOptions,
-            }),
-            text,
-            fileName
-        );
+        return safeExecution(formatStyle(), text, fileName);
     }
 
     if (!doesParserSupportEslint && useBundled) {
