@@ -2,21 +2,21 @@
   "name": "prettier-plus",
   "displayName": "Prettier+",
   "description": "Give Prettier the ability to read the user settings of Visual Studio Code to format style files.",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "publisher": "Shunqian",
   "author": "Esben Petersen <@esbenp>",
   "galleryBanner": {
     "color": "#ffe04b",
     "theme": "light"
   },
-  "homepage": "https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode",
+  "homepage": "https://marketplace.visualstudio.com/items?itemName=Shunqian.prettier-plus",
   "repository": {
     "type": "git",
-    "url": "https://github.com/prettier/prettier-vscode.git"
+    "url": "https://github.com/prettier/prettier-plus.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/prettier/prettier-vscode/issues"
+    "url": "https://github.com/prettier/prettier-plus/issues"
   },
   "engines": {
     "vscode": "^1.17.0"
