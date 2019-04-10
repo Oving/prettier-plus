@@ -24,8 +24,8 @@ import {
 } from './types.d';
 
 const bundledPrettier = require('prettier') as Prettier;
-const fs = require("fs");
-const path = require("path");
+const fs = require('fs');
+const path = require('path');
 /**
  * HOLD style parsers (for stylelint integration)
  */
@@ -179,29 +179,38 @@ async function format(
     const formatStyle = () => {
         const prettierStylelint = require('prettier-stylelint') as PrettierStylelint;
         const workspacePath = workspace.rootPath;
-        const settingPath = "/.vscode/settings.json";
+        const settingPath = '/.vscode/settings.json';
 
         return new Promise(resolve => {
-            fs.readFile(workspacePath + settingPath, "utf8", function (err:string , data:string) {
+            fs.readFile(workspacePath + settingPath, 'utf8', function(
+                err: string,
+                data: string
+            ) {
                 if (err) {
                     addToOutput(
                         `Failed to read user config for ${workspacePath +
-                        settingPath}. Falling back to the default stylelintrc config.`
+                            settingPath}. Falling back to the default stylelintrc config.`
                     );
                     resolve(fileName);
                 } else {
-                    const settings = JSON.parse(data);
-                    const stylelintConfig =
-                        settings["stylelint.config"] &&
-                        settings["stylelint.config"].extends;
-                    if (!stylelintConfig) {
-                        addToOutput(
-                            `Failed to find "stylelint.config" in ${workspacePath +
-                            settingPath}. Falling back to the default stylelintrc config.`
-                        );
-                        resolve(fileName);
-                    } else {
-                        resolve(path.resolve(workspacePath, stylelintConfig));
+                    try {
+                        const settings = JSON.parse(data);
+                        const stylelintConfig =
+                            settings['stylelint.config'] &&
+                            settings['stylelint.config'].extends;
+                        if (!stylelintConfig) {
+                            addToOutput(
+                                `Failed to find "stylelint.config" in ${workspacePath +
+                                    settingPath}. Falling back to the default stylelintrc config.`
+                            );
+                            resolve(fileName);
+                        } else {
+                            resolve(
+                                path.resolve(workspacePath, stylelintConfig)
+                            );
+                        }
+                    } catch (error) {
+                        addToOutput('Failed to parse /.vscode/settings.json file, please check it again.');
                     }
                 }
             });
@@ -209,7 +218,7 @@ async function format(
             return prettierStylelint.format({
                 text,
                 filePath: rulePath,
-                prettierOptions
+                prettierOptions,
             });
         });
     };
