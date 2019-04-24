@@ -22,10 +22,17 @@ import {
     PrettierStylelint,
     PrettierConfig,
 } from './types.d';
+import prettierStylelint from './prettierStylelint';
+prettierStylelint as PrettierStylelint;
 
+const prettierEslint = require('prettier-eslint') as PrettierEslintFormat;
+setUsedModule('prettier-eslint', 'Unknown', true);
 const bundledPrettier = require('prettier') as Prettier;
 const fs = require('fs');
 const path = require('path');
+const { CLIEngine } = require(path.resolve(workspace.rootPath, './node_modules/eslint'));
+const cliEngine = new CLIEngine();
+let eslintConfig = undefined;
 /**
  * HOLD style parsers (for stylelint integration)
  */
@@ -85,6 +92,7 @@ function mergeConfig(
           )
         : Object.assign(vscodeConfig, prettierConfig, additionalConfig);
 }
+
 /**
  * Format the given text with user's configuration.
  * @param text Text to format
@@ -173,55 +181,71 @@ async function format(
             endOfLine: vscodeConfig.endOfLine,
         }
     );
-    /**
-     * Give Prettier the ability to read the user settings of Visual Studio Code to format style files.
-     */
-    const formatStyle = () => {
-        const prettierStylelint = require('prettier-stylelint') as PrettierStylelint;
-        const workspacePath = workspace.rootPath;
-        const settingPath = '/.vscode/settings.json';
+   
+    function getSettingFilePath() {
+        const settingPath = './.vscode/settings.json';
 
-        return new Promise(resolve => {
-            fs.readFile(workspacePath + settingPath, 'utf8', function(
+        return new Promise((resolve) => {
+            fs.readFile(path.resolve(workspace.rootPath, settingPath), 'utf8', (
                 err: string,
                 data: string
-            ) {
-                if (err) {
-                    addToOutput(
-                        `Failed to read user config for ${workspacePath +
-                            settingPath}. Falling back to the default stylelintrc config.`
-                    );
-                    resolve(fileName);
-                } else {
+            ) => {
+                if (!err) {
                     try {
                         const settings = JSON.parse(data);
-                        const stylelintConfig =
-                            settings['stylelint.config'] &&
-                            settings['stylelint.config'].extends;
-                        if (!stylelintConfig) {
-                            addToOutput(
-                                `Failed to find "stylelint.config" in ${workspacePath +
-                                    settingPath}. Falling back to the default stylelintrc config.`
-                            );
-                            resolve(fileName);
-                        } else {
-                            resolve(
-                                path.resolve(workspacePath, stylelintConfig)
-                            );
-                        }
+                        resolve(settings);
                     } catch (error) {
                         addToOutput('Failed to parse /.vscode/settings.json file, please check it again.');
                     }
+                } else {
+                    addToOutput(
+                        `Failed to read user config for ${workspace.rootPath +
+                            settingPath}. Falling back to the default stylelintrc config.`
+                    );
+                    resolve(fileName);
                 }
             });
-        }).then((rulePath: any) => {
-            return prettierStylelint.format({
+        })
+    }
+
+    function getLintrcPath(lintType: string) {
+        return getSettingFilePath().then(settingConfig => {
+            let lintrcPath: string | undefined;
+            if (lintType === 'eslint') {
+                lintrcPath =
+                    settingConfig['eslint.options'] &&
+                    settingConfig['eslint.options'].configFile;
+
+            } else if (lintType === 'stylelint') {
+                lintrcPath =
+                    settingConfig['stylelint.config'] &&
+                    settingConfig['stylelint.config'].extends;
+            }
+            return lintrcPath && path.resolve(workspace.rootPath, lintrcPath) 
+                   || undefined;
+        })
+    }
+
+    async function getEslintConfig() {
+        try{
+            const eslitrcPath = await getLintrcPath('eslint');
+            if (!eslintConfig) {
+                eslintConfig = cliEngine.getConfigForFile(eslitrcPath);
+            }
+            return eslintConfig;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async function prettierEslintAsync() {
+        return prettierEslint({
                 text,
-                filePath: rulePath,
-                prettierOptions,
+                filePath: fileName,
+                eslintConfig:await getEslintConfig(),
+                fallbackPrettierOptions: prettierOptions,
             });
-        });
-    };
+    }
 
     if (vscodeConfig.tslintIntegration && parser === 'typescript') {
         return safeExecution(
@@ -240,26 +264,25 @@ async function format(
             fileName
         );
     }
-
+    
     if (vscodeConfig.eslintIntegration && doesParserSupportEslint) {
         return safeExecution(
-            () => {
-                const prettierEslint = require('prettier-eslint') as PrettierEslintFormat;
-                setUsedModule('prettier-eslint', 'Unknown', true);
-
-                return prettierEslint({
-                    text,
-                    filePath: fileName,
-                    fallbackPrettierOptions: prettierOptions,
-                });
-            },
+            prettierEslintAsync(),
             text,
             fileName
         );
     }
 
     if (vscodeConfig.stylelintIntegration && STYLE_PARSERS.includes(parser)) {
-        return safeExecution(formatStyle(), text, fileName);
+        return safeExecution(
+            prettierStylelint.format({
+                text,
+                filePath: fileName,
+                prettierOptions,
+                stylelintConfigPath: await getLintrcPath('stylelint'),
+            }),
+            text,
+            fileName);
     }
 
     if (!doesParserSupportEslint && useBundled) {

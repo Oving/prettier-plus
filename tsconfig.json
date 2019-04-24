@@ -9,7 +9,8 @@
         "removeComments": true,
         "lib": ["es2016"],
         "sourceMap": true,
-        "rootDir": "."
+        "rootDir": ".",
+        "noImplicitAny": false
     },
     "exclude": ["node_modules", ".vscode-test", "testProject", "testTslint"]
 }

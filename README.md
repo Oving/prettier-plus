@@ -1,6 +1,6 @@
 # Prettier+
 
-Give Prettier the ability to read the user settings of Visual Studio Code to format style files. More information please refer to [prettier-plus](https://github.com/Oving/prettier-plus).
+Give Prettier the ability to read the user settings of Visual Studio Code to format js and style files. More information please refer to [prettier-plus](https://github.com/Oving/prettier-plus).
 
 ## Installation
 

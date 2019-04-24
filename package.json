@@ -1,8 +1,8 @@
 {
   "name": "prettier-plus",
   "displayName": "Prettier+",
-  "description": "Give Prettier the ability to read the user settings of Visual Studio Code to format style files.",
-  "version": "1.8.3",
+  "description": "Give Prettier the ability to read the user settings of Visual Studio Code to format js and style files.",
+  "version": "1.8.4",
   "publisher": "Shunqian",
   "author": "Esben Petersen <@esbenp>",
   "galleryBanner": {
@@ -237,7 +237,6 @@
     "ignore": "^3.3.8",
     "prettier": "1.16.3",
     "prettier-eslint": "^8.8.2",
-    "prettier-stylelint": "^0.4.2",
     "prettier-tslint": "^0.4.2",
     "read-pkg-up": "^4.0.0",
     "resolve": "^1.10.0",

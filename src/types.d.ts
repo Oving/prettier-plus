@@ -135,6 +135,7 @@ interface PrettierEslintOptions {
      * with ESLint.
      */
     eslintConfig?: object;
+    stylelintConfig?: object;
     /**
      * The options to pass for
      * formatting with `prettier`. If not provided, prettier-eslint will attempt
@@ -220,9 +221,11 @@ export type PrettierTslintFormat = (options: PrettierTslintOptions) => string;
 export interface PrettierStylelint {
     format: (options: PrettierEslintOptions) => Promise<string>;
     resolveConfig: (
-        file: string,
         options?: {
-            useCache: boolean;
+            filePath: string,
+            stylelintPath: string,
+            stylelintConfigPath: string,
+            prettierOptions: Object
         }
     ) => Promise<[PrettierConfig, Object]>;
 }
