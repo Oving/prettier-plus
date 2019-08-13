@@ -4,7 +4,10 @@ All notable changes to the "prettier-vscode" extension will be documented in thi
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
-## [Unreleased]
+## [1.8.5]
+-   Prettier [1.18](https://prettier.io/blog/2019/06/06/1.18.0.html)
+-   prettier-tslint 0.4.2
+-   New options: You can configure "eslint.nodePath" in .vscode/settings.json to specify the specific path when Prettier+ searches for the eslint engine.
 
 ## [1.8.0]
 

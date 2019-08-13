@@ -1,6 +1,10 @@
 # Prettier+
 
-Give Prettier the ability to read the user settings of Visual Studio Code to format js and style files. More information please refer to [prettier-plus](https://github.com/Oving/prettier-plus).
+ - Give Prettier the ability to read the user settings of Visual Studio Code to format js and style files.
+ - Allow Prettier+ to read the "eslint.nodePath" attribute in the configuration file of Visual Studio Code to customize the path of eslint engine.
+ - Prettier+ is a superset of Prettier, Full backward compatibility.
+
+More information please refer to [prettier-plus](https://github.com/Oving/prettier-plus).
 
 ## Installation
 

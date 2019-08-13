@@ -30,7 +30,11 @@ setUsedModule('prettier-eslint', 'Unknown', true);
 const bundledPrettier = require('prettier') as Prettier;
 const fs = require('fs');
 const path = require('path');
-const { CLIEngine } = require(path.resolve(workspace.rootPath, './node_modules/eslint'));
+const nodePathFromVscodeSettingFile = workspace.getConfiguration('eslint', path.resolve(workspace.rootPath)).nodePath;
+const nodePath = nodePathFromVscodeSettingFile 
+    ? path.join(nodePathFromVscodeSettingFile, 'eslint')
+    : './node_modules/eslint';
+const { CLIEngine } = require(path.resolve(workspace.rootPath, nodePath));
 const cliEngine = new CLIEngine();
 let eslintConfig = undefined;
 /**
@@ -209,7 +213,7 @@ async function format(
     }
 
     function getLintrcPath(lintType: string) {
-        return getSettingFilePath().then(settingConfig => {
+        return getSettingFilePath().then((settingConfig: any) => {
             let lintrcPath: string | undefined;
             if (lintType === 'eslint') {
                 lintrcPath =
@@ -244,6 +248,7 @@ async function format(
                 filePath: fileName,
                 eslintConfig:await getEslintConfig(),
                 fallbackPrettierOptions: prettierOptions,
+                eslintPath: path.resolve(workspace.rootPath, nodePath),
             });
     }
 
