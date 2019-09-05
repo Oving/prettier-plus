@@ -30,7 +30,7 @@ setUsedModule('prettier-eslint', 'Unknown', true);
 const bundledPrettier = require('prettier') as Prettier;
 const fs = require('fs');
 const path = require('path');
-const nodePathFromVscodeSettingFile = workspace.getConfiguration('eslint', path.resolve(workspace.rootPath)).nodePath;
+const nodePathFromVscodeSettingFile = workspace.getConfiguration('eslint').nodePath;
 const nodePath = nodePathFromVscodeSettingFile 
     ? path.join(nodePathFromVscodeSettingFile, 'eslint')
     : './node_modules/eslint';
